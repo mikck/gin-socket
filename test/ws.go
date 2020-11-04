@@ -313,7 +313,7 @@ func sendData() {
 			if errs != nil {
 				fmt.Println(errs.Error())
 			}
-			WebsocketManager.SendAll(jsons)
+			WebsocketManager.SendAll([]byte(string(jsons)))
 		}
 	}
 }
