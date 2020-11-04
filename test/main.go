@@ -81,8 +81,8 @@ func main() {
 	r.Use(LoggerToFile())
 	r.Use(Cors())
 	r.GET("/data", func(c *gin.Context) {
-		id := c.Query("device_id")
-		price := c.Query("value")
+		id := c.DefaultQuery("device_id", "1")
+		price := c.DefaultQuery("value","1")
 		ch <- msg{Id: id, Price: price}
 		c.JSON(200, gin.H{
 			"message": "pong",
