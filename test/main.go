@@ -41,22 +41,6 @@ func ping(c *gin.Context) {
 			}
 		}
 	}
-
-	//for {
-	//	//读取ws中的数据
-	//	mt, message, err := ws.ReadMessage()
-	//	if err != nil {
-	//		break
-	//	}
-	//	if string(message) == "ping" {
-	//		message = []byte("pong")
-	//	}
-	//	//写入ws数据
-	//	err = ws.WriteMessage(mt, message)
-	//	if err != nil {
-	//		break
-	//	}
-	//}
 }
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -78,7 +62,7 @@ func Cors() gin.HandlerFunc {
 func main() {
 
 	r := gin.Default()
-	r.Use(LoggerToFile())
+	//r.Use(LoggerToFile())
 	r.Use(Cors())
 	r.GET("/data", func(c *gin.Context) {
 		id := c.DefaultQuery("device_id", "1")
