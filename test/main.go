@@ -17,7 +17,7 @@ type msg struct {
 	Price string
 }
 
-var ch = make(chan msg, 100)
+var ch = make(chan string, 100)
 
 var upGrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
@@ -57,9 +57,9 @@ func main() {
 	go WebsocketManager.SendAllService()
 	go sendData()
 	r.GET("/data", func(c *gin.Context) {
-		id := c.DefaultQuery("device_id", "1")
+		//id := c.DefaultQuery("device_id", "1")
 		price := c.DefaultQuery("value","1")
-		ch <- msg{Id: id, Price: price}
+		ch <- price
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})

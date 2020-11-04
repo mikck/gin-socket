@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -313,12 +312,7 @@ func sendData() {
 	for {
 		select {
 		case a := <-ch:
-			jsons, errs := json.Marshal(a)
-
-			if errs != nil {
-				fmt.Println(errs.Error())
-			}
-			WebsocketManager.SendAll(jsons)
+			WebsocketManager.SendAll([]byte(a))
 		}
 	}
 }
