@@ -91,7 +91,7 @@ func (c *Client) Write() {
 			//	log.Printf("client [%s] writemessage err: %s", c.Id, err)
 			//}
 			if err2 != nil {
-				log.Printf("client [%s] writemessage err: %s", c.Id, err)
+				log.Printf("client [%s] writemessage err: %s", c.Id, err2)
 			}
 		}
 	}
