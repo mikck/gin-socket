@@ -1,11 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	_ "github.com/sirupsen/logrus"
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
 )
 
 type msg struct {
@@ -21,27 +25,6 @@ var upGrader = websocket.Upgrader{
 	},
 }
 
-//webSocket请求ping 返回pong
-func ping(c *gin.Context) {
-	//升级get请求为webSocket协议
-	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		return
-	}
-	defer ws.Close()
-
-	for {
-		select {
-		case a := <-ch:
-			fmt.Print(a)
-			err = ws.WriteJSON(a)
-			if err != nil {
-				fmt.Print(err)
-				break
-			}
-		}
-	}
-}
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method
@@ -64,6 +47,15 @@ func main() {
 	r := gin.Default()
 	//r.Use(LoggerToFile())
 	r.Use(Cors())
+
+	go WebsocketManager.Start()
+	go WebsocketManager.SendService()
+	go WebsocketManager.SendService()
+	go WebsocketManager.SendGroupService()
+	go WebsocketManager.SendGroupService()
+	go WebsocketManager.SendAllService()
+	go WebsocketManager.SendAllService()
+	go sendData()
 	r.GET("/data", func(c *gin.Context) {
 		id := c.DefaultQuery("device_id", "1")
 		price := c.DefaultQuery("value","1")
@@ -72,6 +64,32 @@ func main() {
 			"message": "pong",
 		})
 	})
-	r.GET("/ping", ping)
-	r.Run() // listen and serve on 0.0.0.0:8080
+	wsGroup := r.Group("/ws")
+	{
+		wsGroup.GET("/:channel", WebsocketManager.WsClient)
+	}
+
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: r,
+	}
+	go func() {
+		// 服务连接
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Server Start Error: %s\n", err)
+		}
+	}()
+
+	// 等待中断信号以优雅地关闭服务器（设置 5 秒的超时时间）
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("Server Shutdown Error:", err)
+	}
+	log.Println("Server Shutdown")
+
 }
