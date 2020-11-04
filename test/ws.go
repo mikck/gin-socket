@@ -85,8 +85,12 @@ func (c *Client) Write() {
 				return
 			}
 			log.Printf("client [%s] write message: %s", c.Id, string(message))
-			err := c.Socket.WriteMessage(websocket.BinaryMessage, message)
-			if err != nil {
+			//err := c.Socket.WriteMessage(websocket.BinaryMessage, message)
+			err2 := c.Socket.WriteJSON(string(message))
+			//if err != nil {
+			//	log.Printf("client [%s] writemessage err: %s", c.Id, err)
+			//}
+			if err2 != nil {
 				log.Printf("client [%s] writemessage err: %s", c.Id, err)
 			}
 		}
@@ -310,10 +314,11 @@ func sendData() {
 		select {
 		case a := <-ch:
 			jsons, errs := json.Marshal(a)
+
 			if errs != nil {
 				fmt.Println(errs.Error())
 			}
-			WebsocketManager.SendAll([]byte(string(jsons)))
+			WebsocketManager.SendAll(jsons)
 		}
 	}
 }
