@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -85,7 +86,9 @@ func (c *Client) Write() {
 			}
 			log.Printf("client [%s] write message: %s", c.Id, string(message))
 			//err := c.Socket.WriteMessage(websocket.BinaryMessage, message)
-			err2 := c.Socket.WriteJSON(string(message))
+			var m msg
+			json.Unmarshal(message, &m)
+			err2 := c.Socket.WriteJSON(m)
 			//if err != nil {
 			//	log.Printf("client [%s] writemessage err: %s", c.Id, err)
 			//}
@@ -312,7 +315,11 @@ func sendData() {
 	for {
 		select {
 		case a := <-ch:
-			WebsocketManager.SendAll([]byte(a))
+			json, err := json.Marshal(a)
+			if err != nil {
+				fmt.Print(err)
+			}
+			WebsocketManager.SendAll(json)
 		}
 	}
 }
