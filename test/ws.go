@@ -323,3 +323,14 @@ func sendData() {
 		}
 	}
 }
+func sendTime() {
+	ticker := time.NewTicker(time.Second * 60)
+	for {
+		<-ticker.C
+		json, err := json.Marshal(msg{Id: "0", Price: "0"})
+		if err != nil {
+			fmt.Print(err)
+		}
+		WebsocketManager.SendAll(json)
+	}
+}

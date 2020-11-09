@@ -43,6 +43,7 @@ func Cors() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
 func main() {
 
 	r := gin.Default()
@@ -56,6 +57,7 @@ func main() {
 	go WebsocketManager.SendGroupService()
 	go WebsocketManager.SendAllService()
 	go WebsocketManager.SendAllService()
+	go sendTime()
 	go sendData()
 	r.GET("/data", func(c *gin.Context) {
 		id := c.DefaultQuery("device_id", "1")
@@ -71,7 +73,7 @@ func main() {
 	}
 
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":8088",
 		Handler: r,
 	}
 	go func() {
