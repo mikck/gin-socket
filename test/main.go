@@ -67,6 +67,14 @@ func main() {
 			"message": "pong",
 		})
 	})
+	r.POST("/data", func(c *gin.Context) {
+		id := c.DefaultPostForm("device_id", "1")
+		price := c.DefaultPostForm("value", "1")
+		ch <- msg{Id: id, Price: price}
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
 	wsGroup := r.Group("/ws")
 	{
 		wsGroup.GET("/:channel", WebsocketManager.WsClient)
