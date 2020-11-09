@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -70,6 +71,7 @@ func main() {
 	r.POST("/data", func(c *gin.Context) {
 		id := c.DefaultPostForm("device_id", "1")
 		price := c.DefaultPostForm("value", "1")
+		fmt.Print(msg{Id: id, Price: price})
 		ch <- msg{Id: id, Price: price}
 		c.JSON(200, gin.H{
 			"message": "pong",
